@@ -11,11 +11,11 @@ def request_maker():
     """
     Return a k8s api aware HTTPRequest factory that autodiscovers connection info
     """
-    if os.path.exists('/var/run/secrets/kubernetes.io/serviceaccount/token'):
+    #if os.path.exists('/var/run/secrets/kubernetes.io/serviceaccount/token'):
         # We are running in a pod, and have access to a service account!
-        return request_maker_serviceaccount()
-    else:
-        return request_maker_kubeconfig()
+    #    return request_maker_serviceaccount()
+    #else:
+    return request_maker_kubeconfig()
 
 
 def request_maker_serviceaccount():
@@ -67,17 +67,17 @@ def request_maker_kubeconfig():
     filled in to the kubernetes context set as current-context in that .kube/config
     file.
     """
-    with open(os.path.expanduser('~/.kube/config')) as f:
-        config = yaml.safe_load(f)
+    #with open(os.path.expanduser('~/.kube/config')) as f:
+    #    config = yaml.safe_load(f)
 
-    current_context = config['current-context']
+    #current_context = config['current-context']
 
-    context = [c for c in config['contexts'] if c['name'] == current_context][0]['context']
-    cluster = [c for c in config['clusters'] if c['name'] == context['cluster']][0]['cluster']
-    if 'user' in context and context['user']:  # Since user accounts aren't strictly required
-        user = [u for u in config['users'] if u['name'] == context['user']][0]['user']
-    else:
-        user = {}
+    #context = [c for c in config['contexts'] if c['name'] == current_context][0]['context']
+    #cluster = [c for c in config['clusters'] if c['name'] == context['cluster']][0]['cluster']
+    #if 'user' in context and context['user']:  # Since user accounts aren't strictly required
+    #    user = [u for u in config['users'] if u['name'] == context['user']][0]['user']
+    #else:
+    #    user = {}
 
     def make_request(url, **kwargs):
         """
@@ -93,10 +93,10 @@ def request_maker_kubeconfig():
            Appropriate ca will be set if specified in .kube/config
         """
         kwargs.update({
-            'url': cluster['server'] + url,
-            'ca_certs': cluster.get('certificate-authority', None),
-            'client_key': user.get('client-key', None),
-            'client_cert': user.get('client-certificate', None)
+            'url': 'http://10.200.37.88:8888/' + url,
+            #'ca_certs': cluster.get('certificate-authority', None),
+            #'client_key': user.get('client-key', None),
+            #'client_cert': user.get('client-certificate', None)
         })
         return HTTPRequest(**kwargs)
 
