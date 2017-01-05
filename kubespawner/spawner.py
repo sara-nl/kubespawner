@@ -461,8 +461,11 @@ class KubeSpawner(Spawner):
             if data is not None and self.is_pod_running(data):
                 break
             yield gen.sleep(1)
-        self.user.server.ip = data['status']['podIP']
-        self.user.server.port = 8888
+        # Kubernetes on mesos ip of host is stored in hostIP
+        self.user.server.ip = data['status']['hostIP']
+        # Kubernetes on mesos port of host stored in annotation
+        self.user.server.port =  data['metadata']['annotations']['k8s.mesosphere.io/port_TCP_80']
+        #self.user.server.port = 8888
         self.db.commit()
 
     @gen.coroutine
