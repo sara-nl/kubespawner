@@ -461,6 +461,7 @@ class KubeSpawner(Spawner):
             if data is not None and self.is_pod_running(data):
                 break
             yield gen.sleep(1)
+        print(data)
         # Kubernetes on mesos ip of host is stored in hostIP
         self.user.server.ip = data['status']['hostIP']
         # Kubernetes on mesos port of host stored in annotation
